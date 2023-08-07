@@ -1,65 +1,18 @@
 <script lang="ts">
-	import { T } from '@threlte/core';
+	import { T, useThrelte } from '@threlte/core';
 	import { ContactShadows, Grid, HTML } from '@threlte/extras';
-	import { onMount } from 'svelte';
+	import Player from './Player.svelte';
+	import { ACESFilmicToneMapping, Color, Fog, VSMShadowMap } from 'three';
 
-	let cameraX: number = 0;
-	let cameraY: number = 1;
-	let cameraZ: number = 10;
-	let cameraRotationX: number = 0;
-	let cameraRotationY: number = 0;
-
-	function setupFirstPersonControls() {
-		// Gérer les mouvements de la caméra pour la vue FPS
-		const moveSpeed = 0.3;
-		const rotateSpeed = 0.002;
-
-		const onKeyDown = (event: KeyboardEvent) => {
-			switch (event.key) {
-				case 'z':
-					cameraZ += -moveSpeed;
-					break;
-				case 's':
-					cameraZ += moveSpeed;
-					break;
-				case 'q':
-					cameraX += -moveSpeed;
-					break;
-				case 'd':
-					cameraX += moveSpeed;
-					break;
-			}
-		};
-
-		const onMouseMove = (event: MouseEvent) => {
-			const deltaX = event.movementX;
-			const deltaY = event.movementY;
-
-			cameraRotationY -= deltaX * rotateSpeed;
-			cameraRotationX -= deltaY * rotateSpeed;
-
-			// Limiter l'angle vertical de la caméra pour éviter le retournement
-			cameraRotationX = Math.max(-Math.PI / 2, Math.min(Math.PI / 2, cameraRotationX));
-		};
-
-		window.addEventListener('keydown', onKeyDown);
-		window.addEventListener('mousemove', onMouseMove);
-	}
-
-	onMount(() => {
-		setupFirstPersonControls();
-	});
+	const { scene, renderer } = useThrelte();
+	scene.background = new Color('black');
+	scene.fog = new Fog(0x88ccee, 0, 50);
+	renderer.shadowMap.enabled = true;
+	renderer.shadowMap.type = VSMShadowMap;
+	renderer.toneMapping = ACESFilmicToneMapping;
 </script>
 
-<T.PerspectiveCamera
-	makeDefault
-	position={[cameraX, cameraY, cameraZ]}
-	on:create={({ ref }) => {
-		ref.lookAt(0, 3, 0);
-	}}
-	rotation.x={cameraRotationX}
-	rotation.y={cameraRotationY}
-/>
+<Player />
 
 <T.DirectionalLight intensity={0.8} position.x={5} position.y={10} />
 <T.AmbientLight intensity={0.2} />
@@ -77,7 +30,7 @@
 
 <T.Mesh>
 	<HTML transform position.y={3}>
-		<p>Prout en 3D lol</p>
+		<p>Text</p>
 	</HTML>
 </T.Mesh>
 
