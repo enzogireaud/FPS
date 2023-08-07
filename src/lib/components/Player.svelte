@@ -1,19 +1,15 @@
 <script lang="ts">
 	import { Capsule } from 'three/examples/jsm/math/Capsule';
 	import { T, useFrame, useThrelte } from '@threlte/core';
-	import { OrbitControls } from '@threlte/extras';
 	import { onMount } from 'svelte';
 	import { Clock, DirectionalLight, HemisphereLight, PerspectiveCamera, Vector3 } from 'three';
 	import { Octree } from 'three/examples/jsm/math/Octree';
-	import { OctreeHelper } from 'three/examples/jsm/helpers/OctreeHelper';
 
-	// CONSTANTES
+	// Init
 
 	const GRAVITY = 0;
 	const STEPS_PER_FRAME = 5;
-	const { scene } = useThrelte();
 	const clock = new Clock();
-
 	let camera: PerspectiveCamera = new PerspectiveCamera(
 		70,
 		window.innerWidth / window.innerHeight,
@@ -39,14 +35,11 @@
 	directionalLight.shadow.radius = 4;
 	directionalLight.shadow.bias = -0.00006;
 
-	// const worldOctree = new Octree();
+	// Init Octree (colisions)
 	const worldOctree = new Octree();
-
 	const playerCollider = new Capsule(new Vector3(0, 0.35, 0), new Vector3(0, 1, 0), 0.35);
-
 	const playerVelocity = new Vector3();
 	const playerDirection = new Vector3();
-
 	let playerOnFloor = false;
 	let mouseTime = 0;
 
@@ -54,9 +47,11 @@
 	interface KeyStates {
 		[key: string]: boolean;
 	}
-
 	const keyStates: KeyStates = {};
 
+	// Main functions
+
+	// Gère la collision avec le world
 	function playerCollisions() {
 		const result = worldOctree.capsuleIntersect(playerCollider);
 
@@ -73,6 +68,7 @@
 		}
 	}
 
+	// Fonction pour update la pos du player
 	function updatePlayer(deltaTime: number) {
 		let damping = Math.exp(-4 * deltaTime) - 1;
 
@@ -93,6 +89,7 @@
 		camera.position.copy(playerCollider.end);
 	}
 
+	// Choper le vecteur avant arriere
 	function getForwardVector() {
 		camera.getWorldDirection(playerDirection);
 		playerDirection.y = 0;
@@ -101,6 +98,7 @@
 		return playerDirection;
 	}
 
+	// Vecteur cotés
 	function getSideVector() {
 		camera.getWorldDirection(playerDirection);
 		playerDirection.y = 0;
@@ -110,6 +108,7 @@
 		return playerDirection;
 	}
 
+	// On bind les f sur les touches
 	function controls(deltaTime: number) {
 		// gives a bit of air control
 		const speedDelta = deltaTime * (playerOnFloor ? 25 : 8);
@@ -134,10 +133,7 @@
 			playerVelocity.y = 0;
 		}
 	}
-	const helper = new OctreeHelper(worldOctree);
-	helper.visible = false;
-	scene.add(helper);
-
+	// Si le player tombe
 	function teleportPlayerIfOob() {
 		if (camera.position.y <= -25) {
 			playerCollider.start.set(0, 0.35, 0);
@@ -147,7 +143,9 @@
 			camera.rotation.set(0, 0, 0);
 		}
 	}
-	useFrame((delta) => {
+
+	// Tick
+	useFrame(() => {
 		const deltaTime = Math.min(0.05, clock.getDelta());
 		for (let i = 0; i < STEPS_PER_FRAME; i++) {
 			controls(deltaTime);
@@ -157,6 +155,8 @@
 			teleportPlayerIfOob();
 		}
 	});
+
+	// On recupère les eventListener après le mount du composant pour etre sur d'avoir les élements du dom a dispo
 	onMount(() => {
 		document.addEventListener('keydown', (event) => {
 			keyStates[event.code] = true;
