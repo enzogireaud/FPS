@@ -1,81 +1,88 @@
 <script lang="ts">
-  import { T } from '@threlte/core'
-  import { ContactShadows, Float, Grid, OrbitControls } from '@threlte/extras'
+	import { T } from '@threlte/core';
+	import { ContactShadows, Grid, HTML } from '@threlte/extras';
+	import { onMount } from 'svelte';
+
+	let cameraX: number = 0;
+	let cameraY: number = 1;
+	let cameraZ: number = 10;
+	let cameraRotationX: number = 0;
+	let cameraRotationY: number = 0;
+
+	function setupFirstPersonControls() {
+		// Gérer les mouvements de la caméra pour la vue FPS
+		const moveSpeed = 0.3;
+		const rotateSpeed = 0.002;
+
+		const onKeyDown = (event: KeyboardEvent) => {
+			switch (event.key) {
+				case 'z':
+					cameraZ += -moveSpeed;
+					break;
+				case 's':
+					cameraZ += moveSpeed;
+					break;
+				case 'q':
+					cameraX += -moveSpeed;
+					break;
+				case 'd':
+					cameraX += moveSpeed;
+					break;
+			}
+		};
+
+		const onMouseMove = (event: MouseEvent) => {
+			const deltaX = event.movementX;
+			const deltaY = event.movementY;
+
+			cameraRotationY -= deltaX * rotateSpeed;
+			cameraRotationX -= deltaY * rotateSpeed;
+
+			// Limiter l'angle vertical de la caméra pour éviter le retournement
+			cameraRotationX = Math.max(-Math.PI / 2, Math.min(Math.PI / 2, cameraRotationX));
+		};
+
+		window.addEventListener('keydown', onKeyDown);
+		window.addEventListener('mousemove', onMouseMove);
+	}
+
+	onMount(() => {
+		setupFirstPersonControls();
+	});
 </script>
 
 <T.PerspectiveCamera
-  makeDefault
-  position={[-10, 10, 10]}
-  fov={15}
->
-  <OrbitControls
-    autoRotate
-    enableZoom={false}
-    enableDamping
-    autoRotateSpeed={0.5}
-    target.y={1.5}
-  />
-</T.PerspectiveCamera>
-
-<T.DirectionalLight
-  intensity={0.8}
-  position.x={5}
-  position.y={10}
+	makeDefault
+	position={[cameraX, cameraY, cameraZ]}
+	on:create={({ ref }) => {
+		ref.lookAt(0, 3, 0);
+	}}
+	rotation.x={cameraRotationX}
+	rotation.y={cameraRotationY}
 />
+
+<T.DirectionalLight intensity={0.8} position.x={5} position.y={10} />
 <T.AmbientLight intensity={0.2} />
 
 <Grid
-  position.y={-0.001}
-  cellColor="#ffffff"
-  sectionColor="#ffffff"
-  sectionThickness={0}
-  fadeDistance={25}
-  cellSize={2}
+	position.y={-0.001}
+	cellColor="#ffffff"
+	sectionColor="#ffffff"
+	sectionThickness={0}
+	fadeDistance={25}
+	cellSize={2}
 />
 
-<ContactShadows
-  scale={10}
-  blur={2}
-  far={2.5}
-  opacity={0.5}
-/>
+<ContactShadows scale={10} blur={2} far={2.5} opacity={0.5} />
 
-<Float
-  floatIntensity={1}
-  floatingRange={[0, 1]}
->
-  <T.Mesh
-    position.y={1.2}
-    position.z={-0.75}
-  >
-    <T.BoxGeometry />
-    <T.MeshStandardMaterial color="#0059BA" />
-  </T.Mesh>
-</Float>
+<T.Mesh>
+	<HTML transform position.y={3}>
+		<p>Prout en 3D lol</p>
+	</HTML>
+</T.Mesh>
 
-<Float
-  floatIntensity={1}
-  floatingRange={[0, 1]}
->
-  <T.Mesh
-    position={[1.2, 1.5, 0.75]}
-    rotation.x={5}
-    rotation.y={71}
-  >
-    <T.TorusKnotGeometry args={[0.5, 0.15, 100, 12, 2, 3]} />
-    <T.MeshStandardMaterial color="#F85122" />
-  </T.Mesh>
-</Float>
-
-<Float
-  floatIntensity={1}
-  floatingRange={[0, 1]}
->
-  <T.Mesh
-    position={[-1.4, 1.5, 0.75]}
-    rotation={[-5, 128, 10]}
-  >
-    <T.IcosahedronGeometry />
-    <T.MeshStandardMaterial color="#F8EBCE" />
-  </T.Mesh>
-</Float>
+<style>
+	p {
+		color: white;
+	}
+</style>
