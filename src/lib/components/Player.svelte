@@ -12,10 +12,6 @@
 	let raycaster = new Raycaster();
 	let intersection;
 
-	// Box
-	let box: Mesh = new Mesh();
-	let initialColor = 'black';
-
 	// Player
 	const cameraOffset = 3;
 	const GRAVITY = 3;
@@ -152,13 +148,6 @@
 
 			// Raycast
 			raycaster.setFromCamera(new Vector2(), camera);
-			intersection = raycaster.intersectObject(box);
-
-			if (intersection.length > 0) {
-				initialColor = 'Red';
-			} else {
-				initialColor = 'Black';
-			}
 		}
 	});
 	function displayText() {
@@ -193,18 +182,4 @@
 	});
 </script>
 
-<T is={box} position.z={-10}>
-	<T.BoxGeometry args={[8, 3, 0.1]} />
-	<T.MeshBasicMaterial color={initialColor} />
-	<HTML transform position.z={1}>
-		<button>HELLO WORLD</button>
-	</HTML>
-</T>
-
 <T is={camera} makeDefault />
-
-<style>
-	button {
-		color: white;
-	}
-</style>
