@@ -1,8 +1,7 @@
 <script lang="ts">
 	import { T, useFrame } from '@threlte/core';
-	import { HTML } from '@threlte/extras';
 	import { onMount } from 'svelte';
-	import { Clock, Mesh, PerspectiveCamera, Raycaster, Vector2, Vector3 } from 'three';
+	import { Clock, PerspectiveCamera, Raycaster, Vector2, Vector3 } from 'three';
 	import { Capsule } from 'three/examples/jsm/math/Capsule';
 	import type { Octree } from 'three/examples/jsm/math/Octree';
 
@@ -13,8 +12,8 @@
 	let intersection;
 
 	// Player
-	const cameraOffset = 3;
-	const GRAVITY = 3;
+	const cameraOffset = 1;
+	const GRAVITY = 4;
 	const STEPS_PER_FRAME = 5;
 	let camera: PerspectiveCamera = new PerspectiveCamera(
 		70,
@@ -104,19 +103,19 @@
 		const speedDelta = deltaTime * (playerOnFloor ? 25 : 8);
 
 		if (keyStates['KeyW']) {
-			playerVelocity.add(getForwardVector().multiplyScalar(speedDelta * 0.5));
+			playerVelocity.add(getForwardVector().multiplyScalar(speedDelta * 0.4));
 		}
 
 		if (keyStates['KeyS']) {
-			playerVelocity.add(getForwardVector().multiplyScalar(-speedDelta * 0.5));
+			playerVelocity.add(getForwardVector().multiplyScalar(-speedDelta * 0.4));
 		}
 
 		if (keyStates['KeyA']) {
-			playerVelocity.add(getSideVector().multiplyScalar(-speedDelta * 0.5));
+			playerVelocity.add(getSideVector().multiplyScalar(-speedDelta * 0.4));
 		}
 
 		if (keyStates['KeyD']) {
-			playerVelocity.add(getSideVector().multiplyScalar(speedDelta * 0.5));
+			playerVelocity.add(getSideVector().multiplyScalar(speedDelta * 0.4));
 		}
 
 		if (playerOnFloor) {
@@ -150,9 +149,6 @@
 			raycaster.setFromCamera(new Vector2(), camera);
 		}
 	});
-	function displayText() {
-		console.log('TEXT');
-	}
 
 	// On recupère les eventListener après le mount du composant pour etre sur d'avoir les élements du dom a dispo
 	onMount(() => {
@@ -167,10 +163,6 @@
 		addEventListener('mousedown', () => {
 			document.body.requestPointerLock();
 			mouseTime = performance.now();
-
-			if (intersection.length > 0) {
-				displayText();
-			}
 		});
 
 		document.body.addEventListener('mousemove', (event) => {

@@ -36,13 +36,13 @@
 		height: 100%;
 		top: 0;
 		left: 0;
-		background-color: white;
+		background-color: black;
 		display: flex;
 		flex-direction: column;
 		gap: 0.25rem;
 		align-items: center;
 		justify-content: center;
-		color: black;
+		color: white;
 	}
 	.loading {
 		font-size: 0.875rem;
@@ -51,12 +51,12 @@
 	.bar-wrapper {
 		width: 33.333333%;
 		height: 10px;
-		border: 1px solid black;
+		border: 1px solid white;
 		position: relative;
 		text-align: center;
 	}
 	.bar {
 		height: 100%;
-		background-color: black;
+		background-color: white;
 	}
 </style>

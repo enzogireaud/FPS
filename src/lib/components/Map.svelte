@@ -8,7 +8,7 @@
 	onMount(() => {
 		const loader = new GLTFLoader().setPath('/assets/');
 		loader.load('map.glb', (gltf) => {
-			gltf.scene.scale.set(0.03, 0.03, 0.03);
+			gltf.scene.scale.set(0.01, 0.01, 0.01);
 			gltf.scene.position.set(0, -2, 0);
 			gltfScene = gltf;
 			worldOctree.fromGraphNode(gltfScene.scene);
