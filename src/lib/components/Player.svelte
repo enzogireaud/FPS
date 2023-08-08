@@ -1,14 +1,25 @@
 <script lang="ts">
 	import { T, useFrame } from '@threlte/core';
+	import { HTML } from '@threlte/extras';
 	import { onMount } from 'svelte';
-	import { Clock, PerspectiveCamera, Vector3 } from 'three';
+	import { Clock, Mesh, PerspectiveCamera, Raycaster, Vector2, Vector3 } from 'three';
 	import { Capsule } from 'three/examples/jsm/math/Capsule';
 	import type { Octree } from 'three/examples/jsm/math/Octree';
 
 	// Init
+
+	// Raycaster
+	let raycaster = new Raycaster();
+	let intersection;
+
+	// Box
+	let box: Mesh = new Mesh();
+	let initialColor = 'black';
+
+	// Player
+	const cameraOffset = 3;
 	const GRAVITY = 3;
 	const STEPS_PER_FRAME = 5;
-	const clock = new Clock();
 	let camera: PerspectiveCamera = new PerspectiveCamera(
 		70,
 		window.innerWidth / window.innerHeight,
@@ -16,6 +27,8 @@
 		1000
 	);
 	camera.rotation.order = 'YXZ';
+	// Render
+	const clock = new Clock();
 
 	// Init Octree (colisions)
 	export let worldOctree: Octree;
@@ -36,7 +49,6 @@
 	// Gère la collision avec le world
 	function playerCollisions() {
 		const result = worldOctree.capsuleIntersect(playerCollider);
-
 		playerOnFloor = false;
 
 		if (result) {
@@ -68,7 +80,7 @@
 		playerCollisions();
 
 		camera.position.copy(playerCollider.end);
-		camera.position.y = playerCollider.end.y + 1;
+		camera.position.y = playerCollider.end.y + cameraOffset;
 	}
 
 	// Choper le vecteur avant arriere
@@ -137,8 +149,21 @@
 			updatePlayer(deltaTime);
 
 			teleportPlayerIfOob();
+
+			// Raycast
+			raycaster.setFromCamera(new Vector2(), camera);
+			intersection = raycaster.intersectObject(box);
+
+			if (intersection.length > 0) {
+				initialColor = 'Red';
+			} else {
+				initialColor = 'Black';
+			}
 		}
 	});
+	function displayText() {
+		console.log('TEXT');
+	}
 
 	// On recupère les eventListener après le mount du composant pour etre sur d'avoir les élements du dom a dispo
 	onMount(() => {
@@ -153,6 +178,10 @@
 		addEventListener('mousedown', () => {
 			document.body.requestPointerLock();
 			mouseTime = performance.now();
+
+			if (intersection.length > 0) {
+				displayText();
+			}
 		});
 
 		document.body.addEventListener('mousemove', (event) => {
@@ -164,4 +193,18 @@
 	});
 </script>
 
+<T is={box} position.z={-10}>
+	<T.BoxGeometry args={[8, 3, 0.1]} />
+	<T.MeshBasicMaterial color={initialColor} />
+	<HTML transform position.z={1}>
+		<button>HELLO WORLD</button>
+	</HTML>
+</T>
+
 <T is={camera} makeDefault />
+
+<style>
+	button {
+		color: white;
+	}
+</style>
