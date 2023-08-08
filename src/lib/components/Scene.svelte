@@ -6,7 +6,7 @@
 
 	const { scene, renderer } = useThrelte();
 	scene.background = new Color('black');
-	scene.fog = new Fog('#b5bbc4', 0, 50);
+	scene.fog = new Fog('#b5bbc4', 0, 100);
 	renderer.shadowMap.enabled = true;
 	renderer.shadowMap.type = VSMShadowMap;
 	renderer.toneMapping = ACESFilmicToneMapping;

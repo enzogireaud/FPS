@@ -2,24 +2,17 @@
 	import { Capsule } from 'three/examples/jsm/math/Capsule';
 	import { T, useFrame, useLoader } from '@threlte/core';
 	import { onMount } from 'svelte';
-	import {
-		Clock,
-		DirectionalLight,
-		DoubleSide,
-		HemisphereLight,
-		Mesh,
-		PerspectiveCamera,
-		Vector3
-	} from 'three';
+	import { Clock, DirectionalLight, HemisphereLight, PerspectiveCamera, Vector3 } from 'three';
 	import { Octree } from 'three/examples/jsm/math/Octree';
 	import { TextureLoader } from 'three';
-
+	import { GLTFLoader } from 'three/examples/jsm/loaders/GLTFLoader';
+	let gltfScene: any;
 	// Init
 	const texture = useLoader(TextureLoader).load('/assets/ground.jpeg');
-	const GRAVITY = 1;
+	const GRAVITY = 5;
 	const STEPS_PER_FRAME = 5;
-	const FLOOR: Mesh = new Mesh();
-	const FLOOR2: Mesh = new Mesh();
+	// const FLOOR: Mesh = new Mesh();
+	// const FLOOR2: Mesh = new Mesh();
 	const clock = new Clock();
 	let camera: PerspectiveCamera = new PerspectiveCamera(
 		70,
@@ -65,12 +58,17 @@
 	// Gère la collision avec le world
 	function playerCollisions() {
 		const result = worldOctree.capsuleIntersect(playerCollider);
+
 		playerOnFloor = false;
+
 		if (result) {
-			playerOnFloor = true;
+			playerOnFloor = result.normal.y > 0;
+
 			if (!playerOnFloor) {
 				playerVelocity.addScaledVector(result.normal, -result.normal.dot(playerVelocity));
 			}
+
+			playerCollider.translate(result.normal.multiplyScalar(result.depth));
 		}
 	}
 
@@ -81,7 +79,7 @@
 		if (!playerOnFloor) {
 			playerVelocity.y -= GRAVITY * deltaTime;
 			// small air resistance
-			damping *= 0.1;
+			damping *= 0.2;
 		}
 
 		playerVelocity.addScaledVector(playerVelocity, damping);
@@ -120,19 +118,19 @@
 		const speedDelta = deltaTime * (playerOnFloor ? 25 : 8);
 
 		if (keyStates['KeyW']) {
-			playerVelocity.add(getForwardVector().multiplyScalar(speedDelta * 0.4));
+			playerVelocity.add(getForwardVector().multiplyScalar(speedDelta * 0.5));
 		}
 
 		if (keyStates['KeyS']) {
-			playerVelocity.add(getForwardVector().multiplyScalar(-speedDelta * 0.4));
+			playerVelocity.add(getForwardVector().multiplyScalar(-speedDelta * 0.5));
 		}
 
 		if (keyStates['KeyA']) {
-			playerVelocity.add(getSideVector().multiplyScalar(-speedDelta * 0.4));
+			playerVelocity.add(getSideVector().multiplyScalar(-speedDelta * 0.5));
 		}
 
 		if (keyStates['KeyD']) {
-			playerVelocity.add(getSideVector().multiplyScalar(speedDelta * 0.4));
+			playerVelocity.add(getSideVector().multiplyScalar(speedDelta * 0.5));
 		}
 
 		if (playerOnFloor) {
@@ -186,24 +184,22 @@
 				camera.rotation.x -= event.movementY / 500;
 			}
 		});
-		worldOctree.fromGraphNode(FLOOR);
-		worldOctree.fromGraphNode(FLOOR2);
+		const loader = new GLTFLoader().setPath('/assets/');
+
+		loader.load('collision-world.glb', (gltf) => {
+			gltf.scene.scale.set(2, 2, 2);
+			gltf.scene.position.set(0, 2, 0);
+			gltfScene = gltf;
+			worldOctree.fromGraphNode(gltfScene.scene);
+		});
 	});
 </script>
 
+{#if gltfScene}
+	<T is={gltfScene.scene} />
+{/if}
 <T is={camera} makeDefault />
-<T is={FLOOR} rotation.x={Math.PI / 2} position.y={0.1} position.x={0}>
-	<T.PlaneGeometry args={[50, 50, 20, 20]} />
-	{#await texture then value}
-		<T.MeshBasicMaterial map={value} side={DoubleSide} />
-	{/await}
-</T>
-<T is={FLOOR2} rotation.x={Math.PI / 2} position.y={10} position.x={50}>
-	<T.PlaneGeometry args={[50, 50, 20, 20]} />
-	{#await texture then value}
-		<T.MeshBasicMaterial map={value} side={DoubleSide} />
-	{/await}
-</T>
+
 <!-- Lights -->
 <T is={fillLight1} />
 <T is={directionalLight} />
