@@ -8,8 +8,6 @@
 	// Init
 	const GRAVITY = 3;
 	const STEPS_PER_FRAME = 5;
-	// const FLOOR: Mesh = new Mesh();
-	// const FLOOR2: Mesh = new Mesh();
 	const clock = new Clock();
 	let camera: PerspectiveCamera = new PerspectiveCamera(
 		70,
@@ -154,7 +152,6 @@
 
 		addEventListener('mousedown', () => {
 			document.body.requestPointerLock();
-
 			mouseTime = performance.now();
 		});
 

@@ -13,6 +13,7 @@
 	/>
 </svelte:head>
 <div>
+	<i class="fa-solid fa-xmark" id="cursor" />
 	<App />
 </div>
 
@@ -22,10 +23,18 @@
 	}
 
 	div {
-		z-index: -1;
+		position: relative;
 		width: 100vw;
 		height: 100vh;
 		background: rgb(13, 19, 32);
 		background: linear-gradient(180deg, rgba(13, 19, 32, 1) 0%, rgba(8, 12, 21, 1) 100%);
+		#cursor {
+			position: absolute;
+			transform: translate(-50%, -50%);
+			left: 50%;
+			top: 50%;
+			font-size: 2em;
+			color: white;
+		}
 	}
 </style>
