@@ -4,11 +4,9 @@
 	import { onMount } from 'svelte';
 	import { Clock, DirectionalLight, HemisphereLight, PerspectiveCamera, Vector3 } from 'three';
 	import { Octree } from 'three/examples/jsm/math/Octree';
-	import { TextureLoader } from 'three';
 	import { GLTFLoader } from 'three/examples/jsm/loaders/GLTFLoader';
 	let gltfScene: any;
 	// Init
-	const texture = useLoader(TextureLoader).load('/assets/ground.jpeg');
 	const GRAVITY = 5;
 	const STEPS_PER_FRAME = 5;
 	// const FLOOR: Mesh = new Mesh();
@@ -186,9 +184,9 @@
 		});
 		const loader = new GLTFLoader().setPath('/assets/');
 
-		loader.load('collision-world.glb', (gltf) => {
-			gltf.scene.scale.set(2, 2, 2);
-			gltf.scene.position.set(0, 2, 0);
+		loader.load('map.glb', (gltf) => {
+			gltf.scene.scale.set(0.01, 0.01, 0.01);
+			gltf.scene.position.set(0, -2, 0);
 			gltfScene = gltf;
 			worldOctree.fromGraphNode(gltfScene.scene);
 		});
