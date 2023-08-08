@@ -7,7 +7,7 @@
 	import { GLTFLoader } from 'three/examples/jsm/loaders/GLTFLoader';
 	let gltfScene: any;
 	// Init
-	const GRAVITY = 5;
+	const GRAVITY = 3;
 	const STEPS_PER_FRAME = 5;
 	// const FLOOR: Mesh = new Mesh();
 	// const FLOOR2: Mesh = new Mesh();
@@ -77,7 +77,7 @@
 		if (!playerOnFloor) {
 			playerVelocity.y -= GRAVITY * deltaTime;
 			// small air resistance
-			damping *= 0.2;
+			damping *= 0.3;
 		}
 
 		playerVelocity.addScaledVector(playerVelocity, damping);
@@ -133,7 +133,7 @@
 
 		if (playerOnFloor) {
 			if (keyStates['Space']) {
-				playerVelocity.y = 10;
+				playerVelocity.y = 8;
 			}
 		}
 	}
@@ -186,7 +186,7 @@
 
 		loader.load('map.glb', (gltf) => {
 			gltf.scene.scale.set(0.01, 0.01, 0.01);
-			gltf.scene.position.set(0, -2, 0);
+			gltf.scene.position.set(0, -0.2, 0);
 			gltfScene = gltf;
 			worldOctree.fromGraphNode(gltfScene.scene);
 		});

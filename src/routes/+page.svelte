@@ -16,12 +16,13 @@
 	<App />
 </div>
 
-<style>
+<style lang="scss">
 	:global(body) {
 		margin: 0;
 	}
 
 	div {
+		z-index: -1;
 		width: 100vw;
 		height: 100vh;
 		background: rgb(13, 19, 32);
