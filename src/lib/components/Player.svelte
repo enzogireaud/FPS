@@ -1,26 +1,17 @@
 <script lang="ts">
 	import { T, useFrame } from '@threlte/core';
 	import { onMount } from 'svelte';
-	import { Clock, PerspectiveCamera, Raycaster, Vector2, Vector3 } from 'three';
+	import { Camera, Clock, PerspectiveCamera, Raycaster, Vector2, Vector3 } from 'three';
 	import { Capsule } from 'three/examples/jsm/math/Capsule';
 	import type { Octree } from 'three/examples/jsm/math/Octree';
 
 	// Init
 
-	// Raycaster
-	let raycaster = new Raycaster();
-	let intersection;
-
 	// Player
 	const cameraOffset = 1;
 	const GRAVITY = 4;
 	const STEPS_PER_FRAME = 5;
-	let camera: PerspectiveCamera = new PerspectiveCamera(
-		70,
-		window.innerWidth / window.innerHeight,
-		0.1,
-		1000
-	);
+	export let camera: Camera;
 	camera.rotation.order = 'YXZ';
 	// Render
 	const clock = new Clock();
@@ -118,11 +109,11 @@
 			playerVelocity.add(getSideVector().multiplyScalar(speedDelta * 0.4));
 		}
 
-		if (playerOnFloor) {
-			if (keyStates['Space']) {
-				playerVelocity.y = 8;
-			}
+		// if (playerOnFloor) {
+		if (keyStates['Space']) {
+			playerVelocity.y = 8;
 		}
+		// }
 	}
 	// Si le player tombe
 	function teleportPlayerIfOob() {
@@ -144,12 +135,8 @@
 			updatePlayer(deltaTime);
 
 			teleportPlayerIfOob();
-
-			// Raycast
-			raycaster.setFromCamera(new Vector2(), camera);
 		}
 	});
-
 	// On recupère les eventListener après le mount du composant pour etre sur d'avoir les élements du dom a dispo
 	onMount(() => {
 		document.addEventListener('keydown', (event) => {

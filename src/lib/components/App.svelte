@@ -4,6 +4,7 @@
 	import { tweened } from 'svelte/motion';
 	import { fade } from 'svelte/transition';
 	import Scene from './Scene.svelte';
+	import { onMount } from 'svelte';
 	const { progress } = useProgress();
 	const tweenedProgress = tweened($progress, {
 		duration: 1000
@@ -25,11 +26,12 @@
 		</div>
 	</div>
 {/if}
+
 <Canvas>
 	<Scene />
 </Canvas>
 
-<style>
+<style lang="scss">
 	.wrapper {
 		position: absolute;
 		width: 100%;
