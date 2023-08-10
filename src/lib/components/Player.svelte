@@ -8,8 +8,8 @@
 	// Init
 
 	// Player
-	const cameraOffset = 1;
-	const GRAVITY = 4;
+	const cameraOffset = 3;
+	const GRAVITY = 6;
 	const STEPS_PER_FRAME = 5;
 	export let camera: Camera;
 	camera.rotation.order = 'YXZ';
@@ -18,6 +18,7 @@
 
 	// Init Octree (colisions)
 	export let worldOctree: Octree;
+	export let moonOctree: Octree;
 	const playerCollider = new Capsule(new Vector3(0, 0.35, 0), new Vector3(0, 1, 0), 0.35);
 	const playerVelocity = new Vector3();
 	const playerDirection = new Vector3();
@@ -35,6 +36,7 @@
 	// Gère la collision avec le world
 	function playerCollisions() {
 		const result = worldOctree.capsuleIntersect(playerCollider);
+		const result2 = moonOctree.capsuleIntersect(playerCollider);
 		playerOnFloor = false;
 
 		if (result) {
@@ -46,6 +48,15 @@
 
 			playerCollider.translate(result.normal.multiplyScalar(result.depth));
 		}
+		if (result2) {
+			playerOnFloor = result2.normal.y > 0;
+
+			if (!playerOnFloor) {
+				playerVelocity.addScaledVector(result2.normal, -result2.normal.dot(playerVelocity));
+			}
+
+			playerCollider.translate(result2.normal.multiplyScalar(result2.depth));
+		}
 	}
 
 	// Fonction pour update la pos du player
@@ -55,7 +66,7 @@
 		if (!playerOnFloor) {
 			playerVelocity.y -= GRAVITY * deltaTime;
 			// small air resistance
-			damping *= 0.3;
+			damping *= 0.1;
 		}
 
 		playerVelocity.addScaledVector(playerVelocity, damping);
@@ -94,24 +105,24 @@
 		const speedDelta = deltaTime * (playerOnFloor ? 25 : 8);
 
 		if (keyStates['KeyW']) {
-			playerVelocity.add(getForwardVector().multiplyScalar(speedDelta * 0.4));
+			playerVelocity.add(getForwardVector().multiplyScalar(speedDelta * 0.6));
 		}
 
 		if (keyStates['KeyS']) {
-			playerVelocity.add(getForwardVector().multiplyScalar(-speedDelta * 0.4));
+			playerVelocity.add(getForwardVector().multiplyScalar(-speedDelta * 0.6));
 		}
 
 		if (keyStates['KeyA']) {
-			playerVelocity.add(getSideVector().multiplyScalar(-speedDelta * 0.4));
+			playerVelocity.add(getSideVector().multiplyScalar(-speedDelta * 0.6));
 		}
 
 		if (keyStates['KeyD']) {
-			playerVelocity.add(getSideVector().multiplyScalar(speedDelta * 0.4));
+			playerVelocity.add(getSideVector().multiplyScalar(speedDelta * 0.6));
 		}
 
 		// if (playerOnFloor) {
 		if (keyStates['Space']) {
-			playerVelocity.y = 8;
+			playerVelocity.y = 12;
 		}
 		// }
 	}

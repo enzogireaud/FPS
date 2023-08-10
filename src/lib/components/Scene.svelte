@@ -7,7 +7,7 @@
 
 	// scene global settings
 	const { scene } = useThrelte();
-	scene.fog = new Fog('#b5bbc4', 0, 150);
+	// scene.fog = new Fog('#b5bbc4', 0, 150);
 	const textureLoader = new TextureLoader();
 
 	// Load envmap

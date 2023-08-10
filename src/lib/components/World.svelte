@@ -9,6 +9,7 @@
 
 	// Init Octree (colisions)
 	const worldOctree = new Octree();
+	const moonOctree = new Octree();
 	const camera: PerspectiveCamera = new PerspectiveCamera(
 		70,
 		window.innerWidth / window.innerHeight,
@@ -46,6 +47,6 @@
 	});
 </script>
 
-<Map {worldOctree} />
-<Player {worldOctree} {camera} />
+<Map {worldOctree} {moonOctree} />
+<Player {worldOctree} {camera} {moonOctree} />
 <Text {button} {text} {isHovered} />
