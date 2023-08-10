@@ -9,7 +9,7 @@
 
 	// Player
 	const cameraOffset = 3;
-	const GRAVITY = 6;
+	const GRAVITY = 5;
 	const STEPS_PER_FRAME = 5;
 	export let camera: Camera;
 	camera.rotation.order = 'YXZ';
